@@ -280,7 +280,7 @@ app.layout = html.Div(
                 style = {"font-family":"Raleway, sans-serif", "color":"#13264B", 'font-size':32, 'marginLeft':35, 'marginTop':35}
                 ),
         
-        html.P('The plot below highlights Remix wins by the size of their social impact. The plot is cumulative, starting in year X to the present.',
+        html.P('The plot below highlights Remix wins by the size of their social impact. The plot is cumulative, starting in year 2016 to the present.',
               style = {'line-height': 20, 'font-family': "Raleway, sans-serif", "color":dark_blue, 'font-size':18, 'marginLeft':35},
             ),
 
