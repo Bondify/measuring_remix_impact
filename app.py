@@ -111,7 +111,7 @@ traces = [
     go.Scatter(
         x = df.score_agency_to_community,
         y = df.score_size_of_impact,
-        hovertemplate = '<b>%{hovertext}</b>',
+        hovertemplate = '<b>%{hovertext}</b><extra></extra>',
         hovertext = df['Win: Win Name'].unique(),
         ids = df['Win: Win Name'].unique(),
         marker = dict(
