@@ -291,7 +291,7 @@ app.layout = html.Div(
                  config={'displayModeBar': False},
                  style={'marginBottom':10}
                  ),
-            html.Img(src=app.get_asset_url('RemixLogo_Blue.png'), style={'height':'10%', 'width':'10%', 'float':'left', 'marginLeft':35, 'marginBottom':25}),
+            #html.Img(src=app.get_asset_url('RemixLogo_Blue.png'), style={'height':'10%', 'width':'10%', 'float':'left', 'marginLeft':35, 'marginBottom':25}),
             ], style={"width": "75%",'float': 'left'}
             ),
         
@@ -305,11 +305,7 @@ app.layout = html.Div(
             ),
            
            ] ),
-    ], style = {'background-image': 'url("/assets/background-image1.png")',
-                'background-size': 'cover',
-                #'height': '100%',
-                'overflow': 'hidden'
-                }
+    ]#, style = {'background-image': 'url("/assets/background-image1.png")','background-size': 'cover', #'height': '100%','overflow': 'hidden'}
 )
 
 @app.callback(
