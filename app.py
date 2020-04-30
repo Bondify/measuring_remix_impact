@@ -291,7 +291,10 @@ app.layout = html.Div(
                  config={'displayModeBar': False},
                  style={'marginBottom':10}
                  ),
-            html.Img(src=app.get_asset_url('RemixLogo_Blue.png'), style={'height':'10%', 'width':'10%', 'float':'left', 'marginLeft':35, 'marginBottom':25}),
+            html.Img(
+              src='https://github.com/Bondify/measuring_remix_impact/blob/master/assets/RemixLogo_Blue.png',
+              #src=app.get_asset_url('RemixLogo_Blue.png')
+                     , style={'height':'10%', 'width':'10%', 'float':'left', 'marginLeft':35, 'marginBottom':25}),
             ], style={"width": "75%",'float': 'left'}
             ),
         
