@@ -233,9 +233,7 @@ app.layout = html.Div(
                 style = {"font-family":"Raleway, sans-serif", "color":"#13264B"}
                 ),
         html.Div([
-             html.Div('The plot below highlights Remix wins by the size of their social impact. The plot is cumulative, starting in year X to the present.'),
-             # html.Div('The horizontal axis goes from Agency centric wins to Community centric wins.'),
-             # html.Div('The vertical axis measures how big the impact of the win was.'),
+             html.Div('The plot below highlights Remix wins by the size of their social impact. The plot is cumulative, starting in year 2016 to the present. All data is available in Salesforce.'),
              ], style = {'line-height': 20, 'font-family': "Raleway, sans-serif", 'font-style': 'italic', "color":dark_grey },
             ),
        
