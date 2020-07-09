@@ -271,7 +271,7 @@ app.layout = html.Div(
                  config={'displayModeBar': False},
                  style={'marginBottom':10}
                  ),
-            html.Img(src=app.get_asset_url('RemixLogo_Blue.png'), style={'height':'5%', 'width':'10%', 'float':'left', 'marginLeft':35, 'marginBottom':15}),
+            html.Img(src=app.get_asset_url('assets/RemixLogo_Blue.png'), style={'height':'5%', 'width':'10%', 'float':'left', 'marginLeft':35, 'marginBottom':15}),
             ], style={"width": "75%",'float': 'left'}
             ),
         
