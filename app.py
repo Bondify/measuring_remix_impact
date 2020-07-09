@@ -270,11 +270,7 @@ app.layout = html.Div(
                  hoverData={'points': [{'customdata': 'Erie using Remix maps to tell advertisers about their system demographics'}]},
                  config={'displayModeBar': False},
                  style={'marginBottom':10}
-                 ),
-            html.Img(src=app.get_asset_url('assets/RemixLogo_Blue.png'), style={'height':'5%', 'width':'10%', 'float':'left', 'marginLeft':35, 'marginBottom':15}),
-            ], style={"width": "75%",'float': 'left'}
-            ),
-        
+                 ),        
             html.Div([
                 html.Div(id='account_name', style = {'font-weight': 'bold', 'marginBottom': 10}),
                 html.Div(id = 'win_description', style={'line-height': 25})
