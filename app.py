@@ -272,7 +272,10 @@ app.layout = html.Div(
                  hoverData={'points': [{'customdata': 'Erie using Remix maps to tell advertisers about their system demographics'}]},
                  config={'displayModeBar': False},
                  style={'marginBottom':10}
-                 ),        
+                 ), 
+            ], style={"width": "75%",'float': 'left'}
+            ),
+        
             html.Div([
                 html.Div(id='account_name', style = {'font-weight': 'bold', 'marginBottom': 10}),
                 html.Div(id = 'win_description', style={'line-height': 25})
@@ -283,11 +286,7 @@ app.layout = html.Div(
             ),
            
            ] ),
-    ], style = {'background-image': 'url("/assets/background-image1.png")',
-                'background-size': 'cover',
-                #'height': '100%',
-                'overflow': 'hidden'
-                }
+    ], #style = {}
 )
 
 @app.callback(
