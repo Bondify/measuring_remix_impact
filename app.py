@@ -10,18 +10,17 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 import pandas as pd
+import math
 
-dictionary = {'agency_to_community':['Predominately agency centric','Agency centric with some external impact', 
-                       'Equal community and agency impact Community centric with some agency impact',
-                       'Community centric with some agency impact', 'Predominately community impact'],
-        'size_of_impact': ['One person', 'A few people / tiny agency','Small agencies colab. / large department',
-                           'Large dep. colab / multiple agencies / a big community', 'City or system level impact'],
-        'score': [1,2,3,4,5]
-        }
+dictionary = {
+    'agency_to_community':['1 - Primarily internal','2','3','4','5 - Primarily community-facing'],
+    'size_of_impact': ['1- One person', '2','3','4','5 - Whole city/system'],
+    'score': [1,2,3,4,5]
+    }
 
 score = pd.DataFrame.from_dict(dictionary)
 
-wins = pd.read_csv('https://raw.githubusercontent.com/Bondify/measuring_remix_impact/master/data/data.csv')
+wins = pd.read_csv("https://raw.githubusercontent.com/Bondify/measuring_remix_impact/master/data.csv")
 
 # Keep this out of source code repository - save in a file or a database
 VALID_USERNAME_PASSWORD_PAIRS = {
@@ -42,10 +41,7 @@ wins_scored = pd.merge(wins,
                        right_on='agency_to_community', 
                        how='left').drop('agency_to_community', axis=1)
 
-wins_scored.columns = ['Win Date', 'Win: Win Name', 'Account Name', 'Win Description',
-       'Win Quote(s)', 'Account Owner', 'Win Category',
-       'Agency centric to Community Centric',
-       'Size of the impact from Small to Large', 'score_agency_to_community']
+wins_scored.rename(columns={'score':'score_agency_to_community'}, inplace=True)
 
 wins_scored = pd.merge(wins_scored, 
                        score.loc[:,['size_of_impact', 'score']], 
@@ -53,37 +49,18 @@ wins_scored = pd.merge(wins_scored,
                        right_on='size_of_impact', 
                        how='left').drop('size_of_impact', axis=1)
 
-wins_scored.columns = ['Win Date', 'Win: Win Name', 'Account Name', 'Win Description',
-       'Win Quote(s)', 'Account Owner', 'Win Category',
-       'Agency centric to Community Centric',
-       'Size of the impact from Small to Large', 'score_agency_to_community', 'score_size_of_impact']
+wins_scored.rename(columns={'score':'score_size_of_impact'}, inplace=True)
 
+wins_scored = wins_scored.loc[~wins_scored['Win Date'].isnull()]
+wins_scored = wins_scored.loc[~wins_scored['score_agency_to_community'].isnull()]
+wins_scored = wins_scored.loc[~wins_scored['score_size_of_impact'].isnull()]
 wins_scored['year'] = [i[-4:] for i in wins_scored['Win Date']]
 wins_scored['size'] = wins_scored.score_agency_to_community * wins_scored.score_size_of_impact
 wins_scored['id'] = wins_scored.score_agency_to_community.map(str) + '-' + wins_scored.score_size_of_impact.map(str)
 
 check = wins_scored.pivot_table('Win: Win Name', index=['id'], aggfunc='count').reset_index()
 check.columns = ['id', 'count']
-
-d = 40
-
-soften_x = [i/d for i in list(range(0,6))]
-l1 = [i/d for i in list(range(5,-1,-1))]
-l2 = [-i/d for i in list(range(0,6))]
-l3 = [-i/d for i in list(range(5,-1,-1))]
-
-soften_x.extend(l1)
-soften_x.extend(l2)
-soften_x.extend(l3)
-
-soften_y = [i/d for i in list(range(5,0,-1))]
-l4 = [-i/d for i in list(range(0,5))]
-l5 = [-i/d for i in list(range(5,0,-1))]
-l6 = [i/d for i in list(range(0,6))]
-
-soften_y.extend(l4)
-soften_y.extend(l5)
-soften_y.extend(l6)
+check['alpha'] = math.pi*2/(check['count'])
 
 repeated = check.loc[check['count']>1,'id']
 df = wins_scored.loc[~wins_scored.id.isin(repeated)]
@@ -93,12 +70,15 @@ df_aux = pd.DataFrame()
 
 for i in repeated:
     df_iterate = df_new.loc[df_new.id==i].reset_index()
-    
-    for j in range(0, check.loc[check.id==i, 'count'].values[0]-1):
-        df_iterate.loc[j, 'score_agency_to_community'] = df_iterate.loc[j, 'score_agency_to_community'] + soften_x[j]
-        df_iterate.loc[j, 'score_size_of_impact'] = df_iterate.loc[j, 'score_size_of_impact'] +  soften_y[j]
+    alpha = check.loc[check.id==i, 'alpha']
+    r = 0.1
+    for j in range(0, len(df_iterate)):
+        df_iterate.loc[j, 'score_agency_to_community'] = df_iterate.loc[j, 'score_agency_to_community'] + r*math.cos(alpha*(j))
+        df_iterate.loc[j, 'score_size_of_impact'] = df_iterate.loc[j, 'score_size_of_impact'] + r*math.sin(alpha*(j))
     
     df_aux = df_aux.append(df_iterate)
+    
+df = df.append(df_aux)
     
     
 df = df.append(df_aux)
@@ -133,42 +113,42 @@ annotation_size = 16
 axis_size = 14
 
 shapes = [
-    dict(# Line Vertical
+    dict(# Center Vertical line
         type="line",
-            x0=2.5,
-            y0=-.25,
-            x1=2.5,
+            x0=3,#2.5,
+            y0=.75,#-.25,
+            x1=3,#2.5,
             y1=5.25,
             line=dict(
                 color= 'rgb(0,0,0)',
                 width=2
             )
         ),
-    dict(# Line Horizontal
+    dict(# Middle Horizontal Line
             type="line",
-            x0=-0.25,
-            y0=2.5,
+            x0=0.75,
+            y0=3,#2.5,
             x1=5.25,
-            y1=2.5,
+            y1=3,#2.5,
             line=dict(
                 color = 'rgb(0,0,0)',
                 width=2
             )
     ),
-    dict(# Line Horizontal
+    dict(# Lower Horizontal Line
             type="line",
-            x0=-0.25,
-            y0=-.25,
+            x0=0.75,
+            y0=.75,
             x1=5.25,
-            y1=-.25,
+            y1=.75,
             line=dict(
                 color = 'rgb(0,0,0)',
                 width=1
             )
     ),
-    dict(# Line Horizontal
+    dict(# Upper Line Horizontal
             type="line",
-            x0=-0.25,
+            x0=0.75,
             y0=5.25,
             x1=5.25,
             y1=5.25,
@@ -177,21 +157,21 @@ shapes = [
                 width=1
             )
     ),
-    dict(# Line Vertical
+    dict(# Left Vertical Line
         type="line",
-            x0=-.25,
-            y0=-.25,
-            x1=-.25,
+            x0=.75,#-.25,
+            y0=.75,
+            x1=.75,#-.25,
             y1=5.25,
             line=dict(
                 color= 'rgb(0,0,0)',
                 width=1
             )
         ),
-    dict(# Line Vertical
+    dict(# Right Vertical Line
         type="line",
             x0=5.25,
-            y0=-.25,
+            y0=.75,
             x1=5.25,
             y1=5.25,
             line=dict(
@@ -203,13 +183,13 @@ shapes = [
 
 #u"\u03A6"
 annotations=[
-    dict(x=0.55, y=-.40, #xref="paper", #yref="paper", 
+    dict(x=1.25, y=.55, #xref="paper", #yref="paper", 
          text="Agency centric to Community Centric "+ u"\u2192", showarrow=False, 
              font=dict(family=annotation_family,
                        size=annotation_size,
                        color='rgb(135,135,135)')
         ),
-    dict(x=-.35, y=0.55, #xref="paper", #yref="paper", 
+    dict(x=0.65, y=1.5, #xref="paper", #yref="paper", 
          text="Low to high impact " + u"\u2192", showarrow=False,
          textangle=270,
              font=dict(family=annotation_family,
@@ -217,8 +197,8 @@ annotations=[
                        color='rgb(135,135,135)')
         ),
     
-        dict( x=1,
-        y=1,
+        dict(x=1.75,
+        y=1.75,
         xref="x",
         yref="y",
         text="Small Impact<br>+<br>Agency Centric",
@@ -228,8 +208,8 @@ annotations=[
                 size=annotation_size,
                 color='rgb(135,135,135)') 
             ),
-        dict(x=1,
-        y=4,
+        dict(x=1.75,
+        y=4.25,
         xref="x",
         yref="y",
         text="Large Impact<br>+<br>Agency Centric",
@@ -239,8 +219,8 @@ annotations=[
                 size=annotation_size,
                 color='rgb(135,135,135)') 
             ),
-    dict(x=4,
-        y=1,
+    dict(x=4.25,
+        y=1.75,
         xref="x",
         yref="y",
         text="Small Impact<br>+<br>Community Centric",
@@ -250,8 +230,8 @@ annotations=[
                 size=annotation_size,
                 color='rgb(135,135,135)') 
         ),
-    dict(   x=4,
-        y=4,
+    dict(x=4.25,
+        y=4.25,
         xref="x",
         yref="y",
         text="Large Impact<br>+<br>Community Centric",
@@ -271,8 +251,8 @@ layout = go.Layout(annotations = annotations, shapes = shapes,
 
 fig = go.Figure(data=traces, layout=layout)
 
-fig.update_xaxes(visible=False, range = [-0.5,5.5])
-fig.update_yaxes(visible=False, range = [-0.5,5.5])
+fig.update_xaxes(visible=False, range = [0.5,5.5])
+fig.update_yaxes(visible=False, range = [0.5,5.5])
 
 app.layout = html.Div(
     [
@@ -280,7 +260,7 @@ app.layout = html.Div(
                 style = {"font-family":"Raleway, sans-serif", "color":"#13264B", 'font-size':32, 'marginLeft':35, 'marginTop':35}
                 ),
         
-        html.P('The plot below highlights Remix wins by the size of their social impact. The plot is cumulative, starting in year 2016 to the present.',
+        html.P('The plot below highlights Remix wins by the size of their social impact for 2019 and 2020.',
               style = {'line-height': 20, 'font-family': "Raleway, sans-serif", "color":dark_blue, 'font-size':18, 'marginLeft':35},
             ),
 
@@ -291,7 +271,7 @@ app.layout = html.Div(
                  config={'displayModeBar': False},
                  style={'marginBottom':10}
                  ),
-            #html.Img(src=app.get_asset_url('RemixLogo_Blue.png'), style={'height':'10%', 'width':'10%', 'float':'left', 'marginLeft':35, 'marginBottom':25}),
+            html.Img(src=app.get_asset_url('RemixLogo_Blue.png'), style={'height':'5%', 'width':'10%', 'float':'left', 'marginLeft':35, 'marginBottom':15}),
             ], style={"width": "75%",'float': 'left'}
             ),
         
@@ -305,7 +285,11 @@ app.layout = html.Div(
             ),
            
            ] ),
-    ]#, style = {'background-image': 'url("/assets/background-image1.png")','background-size': 'cover', #'height': '100%','overflow': 'hidden'}
+    ], style = {'background-image': 'url("/assets/background-image1.png")',
+                'background-size': 'cover',
+                #'height': '100%',
+                'overflow': 'hidden'
+                }
 )
 
 @app.callback(
@@ -336,4 +320,3 @@ def update_output_div(hover_data):
 
 if __name__ == '__main__':
     app.run_server(debug=False)
-    
