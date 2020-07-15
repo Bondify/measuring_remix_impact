@@ -111,6 +111,7 @@ app.layout = html.Div(
                             display_format='MMM Do, YY',
                             start_date_placeholder_text='Start date',
                             end_date_placeholder_text='End date',
+                            clearable = True, 
                             #persistence = True,
                             #persisted_props = ['start_date', 'end_date'],
                             number_of_months_shown = 3,
