@@ -21,7 +21,7 @@ dictionary = {
 
 score = pd.DataFrame.from_dict(dictionary)
 
-wins = pd.read_csv("https://raw.githubusercontent.com/Bondify/measuring_remix_impact/master/data.csv",
+wins = pd.read_csv("https://raw.githubusercontent.com/Bondify/measuring_remix_impact/master/data/data.csv",
                    parse_dates = ['Win Date'])
 
 # Keep this out of source code repository - save in a file or a database
